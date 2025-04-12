@@ -25,7 +25,7 @@ class UserData{
 
     if(email.isEmpty && uid.isEmpty && pid.isEmpty){
       print("Storing....");
-      email = auth.currentUser!.email.toString();
+      email = auth.currentUser!.email!.toString();
       uid = auth.currentUser!.uid;
       await firestore.collection("profile_data").where("email", isEqualTo: email).where("user_ref", isEqualTo: firestore.collection("user_data").doc(uid)).limit(1).get().then((profileData)async{
         pid = profileData.docs[0].id;

@@ -10,13 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-// import 'package:intl/intl.dart' as format;
 import 'package:path/path.dart' as path;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class AppService {
   // Create Single Instance for Entire App
@@ -416,4 +416,48 @@ class AppService {
       print("catch error: $error");
     }
   }
+
+Future fetchTemplates() async {
+    List templates = [];
+    Map mapWatiTemplate = {};
+
+    String apiUrl = 'https://live-server-101723.wati.io/api/v1/templates';
+    String apiToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI0NDMyZWE1YS1jZTMzLTQxYTgtOTgzMC03NjBjYjUwZWUxYTkiLCJ1bmlxdWVfbmFtZSI6IndhdGlAc29leGNlbGxlbmNlLmNvbSIsIm5hbWVpZCI6IndhdGlAc29leGNlbGxlbmNlLmNvbSIsImVtYWlsIjoid2F0aUBzb2V4Y2VsbGVuY2UuY29tIiwiYXV0aF90aW1lIjoiMDkvMjYvMjAyNCAxOToxNTo0NSIsImRiX25hbWUiOiJtdC1wcm9kLVRlbmFudHMiLCJ0ZW5hbnRfaWQiOiIxMDE3MjMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBRE1JTklTVFJBVE9SIiwiZXhwIjoyNTM0MDIzMDA4MDAsImlzcyI6IkNsYXJlX0FJIiwiYXVkIjoiQ2xhcmVfQUkifQ.FveVOgq3bLRs7Z3j_WXIQbsmTEJE5j_p0tTrRV9EPys';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $apiToken',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List data = json.decode(response.body)['result'];
+
+        List approved = data.where((e) => e['status']?.toLowerCase() == 'approved').map((g) {
+          g['serverurl'] = 'https://live-mt-server.wati.io/101723/api/v1';
+          mapWatiTemplate[g['id']] = g;
+          return g;
+        }).toList();
+
+        approved.sort((a, b) => a['id'].compareTo(b['id']));
+
+        templates = approved;
+
+      } else {
+        print('Failed to fetch templates. Status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching templates: $e');
+    }
+    var returnData = {
+      "templates" : templates,
+      "mapWatiTemplate" : mapWatiTemplate
+    };
+
+    return returnData;
+  }
+
 }

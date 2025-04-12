@@ -6,7 +6,6 @@ import 'package:uuid/uuid.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
 
@@ -52,62 +51,62 @@ class DatabaseHelper {
     return await db.query('media');
   }
 
-Future<void> uploadToFirebase() async {
-  List<Map<String, dynamic>> allMedia = await getAllMedia();
+  Future<void> uploadToFirebase() async {
+    List<Map<String, dynamic>> allMedia = await getAllMedia();
 
-  for (var media in allMedia) {
-    String id = media['id'];
-    String fileName = _generateFileNameWithDateTime(media['FileName']);
-    String fileExtension = media['FileExtension'];
-    String filePath = media['FilePath'];
+    for (var media in allMedia) {
+      String id = media['id'];
+      String fileName = _generateFileNameWithDateTime(media['FileName']);
+      String fileExtension = media['FileExtension'];
+      String filePath = media['FilePath'];
 
-    DocumentSnapshot docSnapshot = await FirebaseFirestore.instance.collection('media').doc(id).get();
-    if (!docSnapshot.exists) {
-      firebase_storage.Reference ref = firebase_storage
-          .FirebaseStorage.instance
-          .ref('Nandakumar M/media/$fileName');
-      String contentType = _getContentType(fileExtension);
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance.collection('media').doc(id).get();
+      if (!docSnapshot.exists) {
+        firebase_storage.Reference ref = firebase_storage
+            .FirebaseStorage.instance
+            .ref('Nandakumar M/media/$fileName');
+        String contentType = _getContentType(fileExtension);
 
-      firebase_storage.UploadTask task =
-          ref.putFile(File(filePath), firebase_storage.SettableMetadata(contentType: contentType));
+        firebase_storage.UploadTask task =
+            ref.putFile(File(filePath), firebase_storage.SettableMetadata(contentType: contentType));
 
-      await task.whenComplete(() async {
-         String downloadURL = await ref.getDownloadURL();
-        FirebaseFirestore.instance.collection('media').doc().id;
-        await FirebaseFirestore.instance.collection('media').doc(id).set({
-          'FileName': fileName,
-          'FileExtension': fileExtension,
-          'FilePath': downloadURL,
+        await task.whenComplete(() async {
+          String downloadURL = await ref.getDownloadURL();
+          FirebaseFirestore.instance.collection('media').doc().id;
+          await FirebaseFirestore.instance.collection('media').doc(id).set({
+            'FileName': fileName,
+            'FileExtension': fileExtension,
+            'FilePath': downloadURL,
+          });
         });
-      });
+      }
     }
   }
-}
 
-String _generateFileNameWithDateTime(String originalFileName) {
-  String currentDate = DateTime.now().toLocal().toString();
-  String formattedDate = currentDate.replaceAll(RegExp(r'[^0-9]'), '');
-  return '${originalFileName}_$formattedDate';
-}
-
-String _getContentType(String fileExtension) {
-  switch (fileExtension.toLowerCase()) {
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg';
-    case 'png':
-      return 'image/png';
-    case 'pdf':
-      return 'application/pdf';
-    case 'mp3':
-      return 'audio/mp3';
-    case 'mp4':
-      return 'video/mp4';
-    case 'mp4':
-      return 'video/HEVC';
-    default:
-      return 'application/octet-stream';
+  String _generateFileNameWithDateTime(String originalFileName) {
+    String currentDate = DateTime.now().toLocal().toString();
+    String formattedDate = currentDate.replaceAll(RegExp(r'[^0-9]'), '');
+    return '${originalFileName}_$formattedDate';
   }
-}
+
+  String _getContentType(String fileExtension) {
+    switch (fileExtension.toLowerCase()) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'pdf':
+        return 'application/pdf';
+      case 'mp3':
+        return 'audio/mp3';
+      case 'mp4':
+        return 'video/mp4';
+      case 'mp4':
+        return 'video/HEVC';
+      default:
+        return 'application/octet-stream';
+    }
+  }
 
 }

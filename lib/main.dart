@@ -8,6 +8,7 @@ import 'package:ahticketing/Themes.dart';
 import 'package:ahticketing/chatQuery.dart';
 import 'package:ahticketing/firebase_options.dart';
 import 'package:ahticketing/login.dart';
+import 'package:ahticketing/watiQuery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -81,7 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
     UserData().getUserData().then((value)async {
       userPreferences = value;
     });
-    Future.delayed(Duration(seconds: 0), (){
+
+    Future.delayed(Duration(seconds: 1), (){
       if(auth.currentUser == null){
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (BuildContext context) => Login()
@@ -89,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       else{
         Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (BuildContext context) => ChatQueryAdmin()
+          builder: (BuildContext context) => InboxScreen()
         ));
       }
     });

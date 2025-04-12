@@ -32,6 +32,11 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
   Map<String,dynamic> mapProfile = {};
   Map<String,dynamic> category = {};
   Map<String,dynamic> profileData = {};
+  Map<String,dynamic> statusCount = {
+    "Open" : 0,
+    "Closed" : 0,
+    "Wati" : 0
+  };
 
   bool loading = true;
 
@@ -40,10 +45,15 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
   String status = '';
 
   List clientIssues = [];
-
-  int itemsToShow = 3; 
+  List filteredIssues = [];
+  
+  int itemsToShow = 3;
   
   StreamSubscription? clientIssueSubscription;
+
+   // Define filter states
+  final List<String> tabLabels = ["Wati", "Open", "Closed"];
+  String selectedTab = "Wati"; // Default to Wait tab
 
   @override
   void initState() {
@@ -81,6 +91,8 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
       clientIssueSubscription = collection.snapshots().listen((ciDocs)async{
         if(ciDocs.docs.length != 0){
           setState(() {
+            statusCount['Open'] = (ciDocs.docs.length == 0 ? [] : ciDocs.docs).where((e)=> e.data()['status']['status'] == "Open").length;
+            statusCount['Closed'] = (ciDocs.docs.length == 0 ? [] : ciDocs.docs).where((e)=> e.data()['status']['status'] == "Closed").length;
             clientIssues = ciDocs.docs;
             loading = false;
           });
@@ -92,6 +104,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
           print("No Client Issues Found :) 75");
         }
       });
+
 
       // fetching categories
       firestore.collection("chat config").snapshots().listen((chatConfigDoc) {
@@ -123,6 +136,25 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
   void showLess() {
     setState(() {
       itemsToShow  = 3;
+    });
+  }
+
+  fetchTickets(){
+    setState(() {
+
+      filteredIssues = clientIssues.where((issue) {
+        Map issueData = issue.data();
+        String status = issueData['status']['status'];
+        
+        if (selectedTab == "Wati") {
+          return status == "Action yet to be taken";
+        } else if (selectedTab == "Open") {
+          return status == "Open";
+        } else if (selectedTab == "Closed") {
+          return status == "Closed" || status == "Resolved";
+        }
+        return true;
+      }).toList();
     });
   }
 
@@ -439,54 +471,43 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-        backgroundColor: loading ? Colors.white : localTheme.hexToColor("#ED048D"),
-      ),
-      body: loading ? Center(
-        child: SpinKitCubeGrid(
-          color: localTheme.hexToColor("#ED048D"),
-          size: 50.0,
-        )
-      ) : clientIssues.length == 0 || clientIssues.isEmpty ? Container(
-        child: Center(
-          child: Container(
-            child: Text(
-              "No Tickets Assigned to You .. :)",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-                color: Colors.black,
-              ),
-            ),
-          )
-        ),
-      ) : SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget> [
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    localTheme.hexToColor("#ED048D"),
-                    localTheme.hexToColor("#ED048D"),
-                    localTheme.hexToColor("#f90497"),
-                    Colors.white,
-                  ],
-                )
-              ),
-              child: Row(
+  
+  return Scaffold(
+    appBar: AppBar(
+      toolbarHeight: 0,
+      backgroundColor: loading ? Colors.white : localTheme.hexToColor("#ED048D"),
+    ),
+    body: loading ? Center(
+      child: SpinKitCubeGrid(
+        color: localTheme.hexToColor("#ED048D"),
+        size: 50.0,
+      )
+    ) : Column(
+      children: [
+        // Gradient header
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                localTheme.hexToColor("#ED048D"),
+                localTheme.hexToColor("#ED048D"),
+                localTheme.hexToColor("#f90497"),
+                Colors.white,
+              ],
+            )
+          ),
+          child: Column(
+            children: [
+              // Title section
+              Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     alignment: Alignment.bottomLeft,
-                    margin: EdgeInsets.only(left: 10,top: 15),
+                    margin: EdgeInsets.only(left: 10, top: 15),
                     height: 80,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,7 +521,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                           ),
                         ),
                         Text(
-                          "${profileData['name'] == '' || profileData['name'] == null ? '...' : 'Assigned to you ' + profileData['name'] }",
+                          "${profileData['name'] == '' || profileData['name'] == null ? '...' : 'Assigned to you ' + profileData['name']}",
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
@@ -512,188 +533,276 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                   )
                 ],
               ),
-            ),
-            clientIssues.length != 0 && clientIssues.isNotEmpty ? Container(
-              margin: EdgeInsets.only(left: 10,right: 10,top: 10),
-              alignment: Alignment.bottomLeft,
-              child: Text(
-                "Recent Queries",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Colors.black,
+              
+              // Tab Bar
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: tabLabels.map((label) {
+                    bool isSelected = selectedTab == label;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedTab = label;
+                          fetchTickets();
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white : Colors.transparent,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(8),
+                            topRight: Radius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          '${label } - ${statusCount[label]}',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isSelected ? localTheme.hexToColor("#ED048D") : Colors.white,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-            ) : SizedBox(),
-            clientIssues.length != 0 && clientIssues.isNotEmpty ? Column(
+            ],
+          ),
+        ),
+        
+        // Tickets content
+        Expanded(
+          child: clientIssues.length == 0 || clientIssues.isEmpty ? 
+          Container(
+            child: Center(
+              child: Container(
+                child: Text(
+                  "No Tickets Assigned to You .. :)",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+            ),
+          ) : 
+          filteredIssues.isEmpty ?
+          Container(
+            child: Center(
+              child: Container(
+                child: Text(
+                  "No $selectedTab Tickets Available",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+            ),
+          ) :
+          SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top:10,left: 10,right: 10),
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: clientIssues.length > 3 ? itemsToShow : clientIssues.length,
-                    itemBuilder: (BuildContext context, index) {
-                      Map issueData = clientIssues[index].data();
-                      issueData['category'] = chatConfigData['categories'].where((e) => e['category'] == issueData['category']).toList()[0];
-                      return GestureDetector(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                blurRadius: 5,
-                                spreadRadius: 3,
-                              ),
-                            ],
-                          ),
-                          margin: EdgeInsets.only(bottom: 10),
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(),
-                                    padding: EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        buildRichText("Ticket No : ", issueData['issueno']),
-                                        loginProfileRoles['chatxadmin'] == true ?
-                                        buildRichText("Name : ", issueData['name']) : SizedBox(),
-                                        SizedBox(height: 5,),
-                                        Container(
-                                          width: MediaQuery.of(context).size.width / 1.3,
-                                          child: Text(
-                                            "${issueData['issue']}",
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: GoogleFonts.montserrat(
-                                              fontWeight: FontWeight.w400,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 5,),
-                                        Text(
-                                          "${format.DateFormat("EEE MMM d, yyyy").format(issueData["reporteddate"].toDate())}",
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  StreamBuilder(
-                                    stream: firestore.collection("clientissue").doc(issueData['id']).collection('messages').where('pending',arrayContains:'admin').snapshots(), 
-                                    builder: (BuildContext context,AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
-                                      if(snapshot.data?.docs.length != 0){
-                                        issueData['unread'] = snapshot.data?.docs.length;
-                                      }
-                                      if(snapshot.hasData){
-                                        return snapshot.data?.docs.length != 0 ? Container(
-                                          margin: EdgeInsets.only(right: 10,top: 5),
-                                          padding:EdgeInsets.all(5),
-                                          child: Text(
-                                            "${snapshot.data?.docs.length}",
-                                            style: TextStyle(color:Colors.white),
-                                          ),
-                                          decoration:BoxDecoration(color: Colors.red,shape:BoxShape.circle,),
-                                        ) : SizedBox();
-                                      }
-                                      return SizedBox();
-                                    }
+              children: <Widget> [
+                filteredIssues.length != 0 && filteredIssues.isNotEmpty ? Container(
+                  margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    "$selectedTab Queries",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      color: Colors.black,
+                    ),
+                  ),
+                ) : SizedBox(),
+                
+                (filteredIssues.length > 0 && filteredIssues.isNotEmpty) ? Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: 10, left: 10, right: 10),
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: filteredIssues.length > 10 ? itemsToShow : filteredIssues.length,
+                        itemBuilder: (BuildContext context, index) {
+                          Map issueData = filteredIssues[index].data() ?? {};
+                          issueData['category'] = chatConfigData['categories'].where((e) => e['category'] == issueData['category']).toList()[0];
+                          return GestureDetector(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    blurRadius: 5,
+                                    spreadRadius: 3,
                                   ),
                                 ],
                               ),
-                              GestureDetector(
-                                onTap: (){
-                                  if(loginProfileRoles['chatxadmin'] == true){
-                                    setState(() {
-                                      category = issueData['category'];
-                                      status = issueData['status']['status']; 
-                                      issueData['notes'] = issueData['notes'].length != 0 ? issueData['notes'] : []; 
-                                    });
-                                    changeStatus(issueData);
-                                  }
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[400],
-                                    // color: issueData['status']['status'] == 'Closed' || issueData['status']['status'] == 'Resolved' ? Colors.red[200] :  issueData['status']['status'] == 'Open' ? Colors.green : issueData['status']['status'] == 'Action yet to be taken' ? Colors.orange : Colors.grey,
-                                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10))
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                              margin: EdgeInsets.only(bottom: 10),
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                      "${issueData['status']['status']}",
-                                        style: GoogleFonts.montserrat(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                      Container(
+                                        decoration: BoxDecoration(),
+                                        padding: EdgeInsets.all(10),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            buildRichText("Ticket No : ", issueData['issueno']),
+                                            loginProfileRoles['chatxadmin'] == true ?
+                                            buildRichText("Name : ", issueData['name']) : SizedBox(),
+                                            SizedBox(height: 5,),
+                                            Container(
+                                              width: MediaQuery.of(context).size.width / 1.3,
+                                              child: Text(
+                                                "${issueData['issue']}",
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: GoogleFonts.montserrat(
+                                                  fontWeight: FontWeight.w400,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 5,),
+                                            Text(
+                                              "${format.DateFormat("EEE MMM d, yyyy").format(issueData["reporteddate"].toDate())}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        textAlign: TextAlign.center,
                                       ),
-                                      Icon(Icons.navigate_next_rounded,color: Colors.white,)
+                                      StreamBuilder(
+                                        stream: firestore.collection("clientissue").doc(issueData['id']).collection('messages').where('pending',arrayContains:'admin').snapshots(), 
+                                        builder: (BuildContext context,AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
+                                          if(snapshot.data?.docs.length != 0){
+                                            issueData['unread'] = snapshot.data?.docs.length;
+                                          }
+                                          if(snapshot.hasData){
+                                            return snapshot.data?.docs.length != 0 ? Container(
+                                              margin: EdgeInsets.only(right: 10,top: 5),
+                                              padding:EdgeInsets.all(5),
+                                              child: Text(
+                                                "${snapshot.data?.docs.length}",
+                                                style: TextStyle(color:Colors.white),
+                                              ),
+                                              decoration:BoxDecoration(color: Colors.red,shape:BoxShape.circle,),
+                                            ) : SizedBox();
+                                          }
+                                          return SizedBox();
+                                        }
+                                      ),
                                     ],
                                   ),
-                                ),
+                                  GestureDetector(
+                                    onTap: (){
+                                      if(loginProfileRoles['chatxadmin'] == true){
+                                        setState(() {
+                                          category = issueData['category'];
+                                          status = issueData['status']['status']; 
+                                          issueData['notes'] = issueData['notes'].length != 0 ? issueData['notes'] : []; 
+                                        });
+                                        changeStatus(issueData);
+                                      }
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                        color: issueData['status']['status'] == 'Closed' || issueData['status']['status'] == 'Resolved' ? 
+                                              Colors.red[200] : issueData['status']['status'] == 'Open' ? 
+                                              Colors.green : issueData['status']['status'] == 'Action yet to be taken' ? 
+                                              Colors.orange : Colors.grey,
+                                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10))
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                          "${issueData['status']['status']}",
+                                            style: GoogleFonts.montserrat(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          Icon(Icons.navigate_next_rounded,color: Colors.white,)
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return TicketChat(
-                                chatIndex : issueData['unread'] ?? 0,
-                                issueid : issueData['id'],
-                                userUid : userId,
-                                userName : profileData['name'],
-                                userEmail : profileData['email'],
-                                userProfileID : profileId,
-                                messageRef : firestore.collection("clientissue").doc(issueData['id']).collection("messages"),
-                                issueref : firestore.collection("clientissue").doc(issueData['id']),
+                            ),
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return TicketChat(
+                                    chatIndex : issueData['unread'] ?? 0,
+                                    issueid : issueData['id'],
+                                    userUid : userId,
+                                    userName : profileData['name'],
+                                    userEmail : profileData['email'],
+                                    userProfileID : profileId,
+                                    messageRef : firestore.collection("clientissue").doc(issueData['id']).collection("messages"),
+                                    issueref : firestore.collection("clientissue").doc(issueData['id']),
+                                  );
+                                })
                               );
-                            })
+                              setState(() {
+                                clientIssueSubscription?.cancel();
+                              });
+                            },
                           );
-                          setState(() {
-                            clientIssueSubscription?.cancel();
-                          });
                         },
-                      );
-                    },
-                  ),
-                ),
-                if (itemsToShow < clientIssues.length)
-                TextButton(
-                  onPressed: showMore,
-                  child: Text('Show More',style: TextStyle(color: Colors.grey),),
-                ),
-                if(itemsToShow >= clientIssues.length && itemsToShow != 3)
-                TextButton(
-                  onPressed: showLess,
-                  child: Text('Show Less',style: TextStyle(color: Colors.grey),),
-                ),
+                      ),
+                    ),
+                    if (itemsToShow < filteredIssues.length)
+                    TextButton(
+                      onPressed: showMore,
+                      child: Text('Show More',style: TextStyle(color: Colors.grey),),
+                    ),
+                    if(itemsToShow >= filteredIssues.length && itemsToShow != 3)
+                    TextButton(
+                      onPressed: showLess,
+                      child: Text('Show Less',style: TextStyle(color: Colors.grey),),
+                    ),
+                  ],
+                ) : SizedBox(),
+                SizedBox(height: 10,),
               ],
-            ) : SizedBox(),
-            SizedBox(height: 10,),
-            !loginProfileRoles['chatxadmin'] ?
+            ),
+          ),
+        ),
+        
+        // Help with Queries section
+        !loginProfileRoles['chatxadmin'] ? Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Container(
-              margin: EdgeInsets.only(left: 10,right: 10,bottom: 10),
+              margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
               alignment: Alignment.bottomLeft,
               child: Text(
                 "Help with Queries",
@@ -703,8 +812,8 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                   letterSpacing: 0.3
                 ),
               ),
-            ) : SizedBox(),
-            !loginProfileRoles['chatxadmin'] ? Container(
+            ),
+            Container(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
                 physics: NeverScrollableScrollPhysics(),
@@ -717,7 +826,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          top: index == 0 ? BorderSide(width: 0.5, color: Colors.grey.shade300) : BorderSide(width: 0,color:Colors.grey.shade300),
+                          top: index == 0 ? BorderSide(width: 0.5, color: Colors.grey.shade300) : BorderSide(width: 0, color: Colors.grey.shade300),
                           bottom: BorderSide(width: 0.5, color: Colors.grey.shade300),
                         ),
                       ),
@@ -728,7 +837,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                             fontWeight: FontWeight.w400
                           ),
                         ),
-                        trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
+                        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16,),
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(
                             builder: (BuildContext context) {
@@ -745,7 +854,6 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                         },
                       )
                     )
-                    
                   ) : Container(
                     decoration: BoxDecoration(
                       border: Border(
@@ -759,21 +867,358 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                       title: Text("${category[index]['category']}"),
                       children: [
                         Column(
-                          children: _buildItemsList(category[index]['subcategories'],category[index],context,chatConfigData,profileId,userId,profileData)
+                          children: _buildItemsList(category[index]['subcategories'], category[index], context, chatConfigData, profileId, userId, profileData)
                         ),
                       ],
                     ),
                   );
                 }
               ),
-            ) : SizedBox(),
-            SizedBox(height: 10,),
+            ),
           ],
-        ),
-      )
-    );
-  }
+        ) : SizedBox(),
+      ],
+    )
+  );
 }
+}
+
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         toolbarHeight: 0,
+//         backgroundColor: loading ? Colors.white : localTheme.hexToColor("#ED048D"),
+//       ),
+//       body: loading ? Center(
+//         child: SpinKitCubeGrid(
+//           color: localTheme.hexToColor("#ED048D"),
+//           size: 50.0,
+//         )
+//       ) : clientIssues.length == 0 || clientIssues.isEmpty ? Container(
+//         child: Center(
+//           child: Container(
+//             child: Text(
+//               "No Tickets Assigned to You .. :)",
+//               style: GoogleFonts.poppins(
+//                 fontWeight: FontWeight.bold,
+//                 fontSize: 15,
+//                 color: Colors.black,
+//               ),
+//             ),
+//           )
+//         ),
+//       ) : SingleChildScrollView(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.stretch,
+//           mainAxisAlignment: MainAxisAlignment.start,
+//           children: <Widget> [
+//             Container(
+//               decoration: BoxDecoration(
+//                 gradient: LinearGradient(
+//                   begin: Alignment.topCenter,
+//                   end: Alignment.bottomCenter,
+//                   colors: [
+//                     localTheme.hexToColor("#ED048D"),
+//                     localTheme.hexToColor("#ED048D"),
+//                     localTheme.hexToColor("#f90497"),
+//                     Colors.white,
+//                   ],
+//                 )
+//               ),
+//               child: Row(
+//                 mainAxisAlignment: MainAxisAlignment.start,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Container(
+//                     alignment: Alignment.bottomLeft,
+//                     margin: EdgeInsets.only(left: 10,top: 15),
+//                     height: 80,
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           "Tickets",
+//                           style: GoogleFonts.poppins(
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 15,
+//                             color: Colors.white,
+//                           ),
+//                         ),
+//                         Text(
+//                           "${profileData['name'] == '' || profileData['name'] == null ? '...' : 'Assigned to you ' + profileData['name'] }",
+//                           style: GoogleFonts.poppins(
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 18,
+//                             color: Colors.white,
+//                           ),
+//                         )
+//                       ],
+//                     ),
+//                   )
+//                 ],
+//               ),
+//             ),
+//             clientIssues.length != 0 && clientIssues.isNotEmpty ? Container(
+//               margin: EdgeInsets.only(left: 10,right: 10,top: 10),
+//               alignment: Alignment.bottomLeft,
+//               child: Text(
+//                 "Recent Queries",
+//                 style: GoogleFonts.poppins(
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 15,
+//                   color: Colors.black,
+//                 ),
+//               ),
+//             ) : SizedBox(),
+//             clientIssues.length != 0 && clientIssues.isNotEmpty ? Column(
+//               mainAxisAlignment: MainAxisAlignment.start,
+//               children: [
+//                 Container(
+//                   padding: EdgeInsets.only(top:10,left: 10,right: 10),
+//                   child: ListView.builder(
+//                     padding: EdgeInsets.zero,
+//                     physics: NeverScrollableScrollPhysics(),
+//                     shrinkWrap: true,
+//                     itemCount: clientIssues.length > 3 ? itemsToShow : clientIssues.length,
+//                     itemBuilder: (BuildContext context, index) {
+//                       Map issueData = clientIssues[index].data();
+//                       issueData['category'] = chatConfigData['categories'].where((e) => e['category'] == issueData['category']).toList()[0];
+//                       return GestureDetector(
+//                         child: Container(
+//                           decoration: BoxDecoration(
+//                             color: Colors.white,
+//                             borderRadius: BorderRadius.all(Radius.circular(10)),
+//                             boxShadow: [
+//                               BoxShadow(
+//                                 color: Colors.grey.withOpacity(0.5),
+//                                 blurRadius: 5,
+//                                 spreadRadius: 3,
+//                               ),
+//                             ],
+//                           ),
+//                           margin: EdgeInsets.only(bottom: 10),
+//                           alignment: Alignment.centerLeft,
+//                           child: Column(
+//                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Row(
+//                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   Container(
+//                                     decoration: BoxDecoration(),
+//                                     padding: EdgeInsets.all(10),
+//                                     child: Column(
+//                                       crossAxisAlignment: CrossAxisAlignment.start,
+//                                       children: [
+//                                         buildRichText("Ticket No : ", issueData['issueno']),
+//                                         loginProfileRoles['chatxadmin'] == true ?
+//                                         buildRichText("Name : ", issueData['name']) : SizedBox(),
+//                                         SizedBox(height: 5,),
+//                                         Container(
+//                                           width: MediaQuery.of(context).size.width / 1.3,
+//                                           child: Text(
+//                                             "${issueData['issue']}",
+//                                             maxLines: 3,
+//                                             overflow: TextOverflow.ellipsis,
+//                                             style: GoogleFonts.montserrat(
+//                                               fontWeight: FontWeight.w400,
+//                                               color: Colors.black,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                         SizedBox(height: 5,),
+//                                         Text(
+//                                           "${format.DateFormat("EEE MMM d, yyyy").format(issueData["reporteddate"].toDate())}",
+//                                           style: TextStyle(
+//                                             fontSize: 12,
+//                                             color: Colors.grey
+//                                           ),
+//                                         ),
+//                                       ],
+//                                     ),
+//                                   ),
+//                                   StreamBuilder(
+//                                     stream: firestore.collection("clientissue").doc(issueData['id']).collection('messages').where('pending',arrayContains:'admin').snapshots(), 
+//                                     builder: (BuildContext context,AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot){
+//                                       if(snapshot.data?.docs.length != 0){
+//                                         issueData['unread'] = snapshot.data?.docs.length;
+//                                       }
+//                                       if(snapshot.hasData){
+//                                         return snapshot.data?.docs.length != 0 ? Container(
+//                                           margin: EdgeInsets.only(right: 10,top: 5),
+//                                           padding:EdgeInsets.all(5),
+//                                           child: Text(
+//                                             "${snapshot.data?.docs.length}",
+//                                             style: TextStyle(color:Colors.white),
+//                                           ),
+//                                           decoration:BoxDecoration(color: Colors.red,shape:BoxShape.circle,),
+//                                         ) : SizedBox();
+//                                       }
+//                                       return SizedBox();
+//                                     }
+//                                   ),
+//                                 ],
+//                               ),
+//                               GestureDetector(
+//                                 onTap: (){
+//                                   if(loginProfileRoles['chatxadmin'] == true){
+//                                     setState(() {
+//                                       category = issueData['category'];
+//                                       status = issueData['status']['status']; 
+//                                       issueData['notes'] = issueData['notes'].length != 0 ? issueData['notes'] : []; 
+//                                     });
+//                                     changeStatus(issueData);
+//                                   }
+//                                 },
+//                                 child: Container(
+//                                   padding: EdgeInsets.all(5),
+//                                   decoration: BoxDecoration(
+//                                     color: Colors.grey[400],
+//                                     // color: issueData['status']['status'] == 'Closed' || issueData['status']['status'] == 'Resolved' ? Colors.red[200] :  issueData['status']['status'] == 'Open' ? Colors.green : issueData['status']['status'] == 'Action yet to be taken' ? Colors.orange : Colors.grey,
+//                                     borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10))
+//                                   ),
+//                                   alignment: Alignment.center,
+//                                   child: Row(
+//                                     mainAxisAlignment: MainAxisAlignment.center,
+//                                     crossAxisAlignment: CrossAxisAlignment.center,
+//                                     children: [
+//                                       Text(
+//                                       "${issueData['status']['status']}",
+//                                         style: GoogleFonts.montserrat(
+//                                           fontWeight: FontWeight.bold,
+//                                           color: Colors.white,
+//                                         ),
+//                                         textAlign: TextAlign.center,
+//                                       ),
+//                                       Icon(Icons.navigate_next_rounded,color: Colors.white,)
+//                                     ],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                         onTap: (){
+//                           Navigator.push(context, MaterialPageRoute(
+//                             builder: (BuildContext context) {
+//                               return TicketChat(
+//                                 chatIndex : issueData['unread'] ?? 0,
+//                                 issueid : issueData['id'],
+//                                 userUid : userId,
+//                                 userName : profileData['name'],
+//                                 userEmail : profileData['email'],
+//                                 userProfileID : profileId,
+//                                 messageRef : firestore.collection("clientissue").doc(issueData['id']).collection("messages"),
+//                                 issueref : firestore.collection("clientissue").doc(issueData['id']),
+//                               );
+//                             })
+//                           );
+//                           setState(() {
+//                             clientIssueSubscription?.cancel();
+//                           });
+//                         },
+//                       );
+//                     },
+//                   ),
+//                 ),
+//                 if (itemsToShow < clientIssues.length)
+//                 TextButton(
+//                   onPressed: showMore,
+//                   child: Text('Show More',style: TextStyle(color: Colors.grey),),
+//                 ),
+//                 if(itemsToShow >= clientIssues.length && itemsToShow != 3)
+//                 TextButton(
+//                   onPressed: showLess,
+//                   child: Text('Show Less',style: TextStyle(color: Colors.grey),),
+//                 ),
+//               ],
+//             ) : SizedBox(),
+//             SizedBox(height: 10,),
+//             !loginProfileRoles['chatxadmin'] ?
+//             Container(
+//               margin: EdgeInsets.only(left: 10,right: 10,bottom: 10),
+//               alignment: Alignment.bottomLeft,
+//               child: Text(
+//                 "Help with Queries",
+//                 style: TextStyle(
+//                   color: Colors.black,
+//                   fontWeight: FontWeight.bold,
+//                   letterSpacing: 0.3
+//                 ),
+//               ),
+//             ) : SizedBox(),
+//             !loginProfileRoles['chatxadmin'] ? Container(
+//               child: ListView.builder(
+//                 padding: EdgeInsets.zero,
+//                 physics: NeverScrollableScrollPhysics(),
+//                 shrinkWrap: true,
+//                 itemCount: chatConfigData['categories'].length ?? 0,
+//                 itemBuilder: (BuildContext context, index) {
+//                   var category = chatConfigData['categories'];
+//                   return category[index]['subcategories'].length == 0 ? Container(
+//                     color: Colors.white,
+//                     child: Container(
+//                       decoration: BoxDecoration(
+//                         border: Border(
+//                           top: index == 0 ? BorderSide(width: 0.5, color: Colors.grey.shade300) : BorderSide(width: 0,color:Colors.grey.shade300),
+//                           bottom: BorderSide(width: 0.5, color: Colors.grey.shade300),
+//                         ),
+//                       ),
+//                       child : ListTile( 
+//                         title: Text(
+//                           "${category[index]['category']}",
+//                           style: TextStyle(
+//                             fontWeight: FontWeight.w400
+//                           ),
+//                         ),
+//                         trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
+//                         onTap: (){
+//                           Navigator.push(context, MaterialPageRoute(
+//                             builder: (BuildContext context) {
+//                               return RaiseTicket(
+//                                 category : category[index],
+//                                 subcategory : null,
+//                                 message : chatConfigData['messages'],
+//                                 profileId : profileId,
+//                                 userId : userId,
+//                                 profileData : profileData
+//                               );
+//                             })
+//                           );
+//                         },
+//                       )
+//                     )
+                    
+//                   ) : Container(
+//                     decoration: BoxDecoration(
+//                       border: Border(
+//                         bottom: BorderSide(width: 0.5, color: Colors.grey.shade300),
+//                       ),
+//                     ),
+//                     child: ExpansionTile(
+//                       shape: Border.fromBorderSide(BorderSide.none),
+//                       collapsedBackgroundColor: Colors.white,
+//                       backgroundColor: Colors.white,
+//                       title: Text("${category[index]['category']}"),
+//                       children: [
+//                         Column(
+//                           children: _buildItemsList(category[index]['subcategories'],category[index],context,chatConfigData,profileId,userId,profileData)
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 }
+//               ),
+//             ) : SizedBox(),
+//             SizedBox(height: 10,),
+//           ],
+//         ),
+//       )
+//     );
+//   }
+// }
 
 List<Widget> _buildItemsList(List<dynamic> items,category,context,chatConfigData,profileId,userId,profileData) {
   List<Widget> itemList = [];

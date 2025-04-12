@@ -67,6 +67,7 @@ dependencies:
     git:
       url: https://github.com/matthewrice345/betterplayer.git
       ref: Issue1057
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
