@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class CustomDateRangePicker extends StatefulWidget {
@@ -177,18 +178,17 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Select Date Range',
-              style: TextStyle(
-                fontSize: 18,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
-            
+            const SizedBox(height: 5),
             // Predefined ranges
             SizedBox(
-              height: 200,
+              height: 250,
               child: ListView.builder(
                 itemCount: _predefinedRanges.length,
                 itemBuilder: (context, index) {
@@ -207,7 +207,8 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                         children: [
                           Text(
                             range,
-                            style: TextStyle(
+                            style: GoogleFonts.poppins(
+                              fontSize:12,
                               color: isSelected ? Colors.green : Colors.black,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                             ),
@@ -230,9 +231,9 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Custom Range',
-                    style: TextStyle(
+                    style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -252,17 +253,17 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Start Date',
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   DateFormat('MMM dd, yyyy').format(startDate),
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
@@ -283,17 +284,17 @@ class _CustomDateRangePickerState extends State<CustomDateRangePicker> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'End Date',
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     color: Colors.grey,
                                   ),
                                 ),
                                 Text(
                                   DateFormat('MMM dd, yyyy').format(endDate.subtract(const Duration(days: 1))),
-                                  style: const TextStyle(
-                                    fontSize: 14,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],

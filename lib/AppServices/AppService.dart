@@ -6,12 +6,14 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_session.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:path/path.dart' as path;
@@ -460,4 +462,56 @@ Future fetchTemplates() async {
     return returnData;
   }
 
+  launchURL(String url,context) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      // await launchUrl(Uri.parse(url));
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      await showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          String title = "Something Wrong";
+          String message = "Could not able to launch $url";
+          return Platform.isIOS ? CupertinoAlertDialog(
+            title: Text(title),
+            content: Text(message),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text("OK"),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+          )
+          : AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(title),
+            content: Text(message),
+            actions: <Widget>[
+              TextButton(
+                child: Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+}
+class AppColors {
+  static const Color background1 = Color.fromARGB(255, 253, 253, 253); // Left panel
+  static const Color background2 = Color.fromARGB(255, 255, 255, 255); // Right chat
+
+  static const Color primaryText = Color.fromARGB(255, 83, 83, 83); // Names
+  static const Color secondaryText = Color(0xFF6C757D); // Last seen
+
+  static const Color chatBubbleUser = Color.fromARGB(255, 247, 235, 255); // Sent messages
+  static const Color chatBubbleBot = Color.fromARGB(255, 214, 178, 238); // Received messages
+
+  static const Color onlineDot = Color(0xFF2ECC71); // Online indicator
+  static const Color highlightBlue = Color(0xFF589BFF); // Header icons, buttons
+
+  static const Color purple = Color.fromARGB(255, 65, 141, 84);
 }

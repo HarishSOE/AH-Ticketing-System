@@ -344,7 +344,7 @@ class _RaiseTicket extends State<RaiseTicket> {
             ),
             Text(
               "Ticket Generated",
-              style: TextStyle(
+              style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 fontSize: 20
               ),
@@ -353,10 +353,10 @@ class _RaiseTicket extends State<RaiseTicket> {
           ],
         ),
       ) : loading ? Center(
-        child: SpinKitCubeGrid(
-          color: localTheme.hexToColor("#ED048D"),
-          size: 50.0,
-        )
+        child : SpinKitCircle(
+          color: AppColors.purple,
+          size: 40,
+        ),
       ) : SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(10),
