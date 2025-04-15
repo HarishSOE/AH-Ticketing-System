@@ -41,54 +41,58 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDUFsrrvx7_gBubGHAjJUceUR_X4soP4XE',
-    appId: '1:522544587505:web:65ed9e3c32d7095ed2bf50',
-    messagingSenderId: '522544587505',
-    projectId: 'test-environment-841c3',
-    authDomain: 'test-environment-841c3.firebaseapp.com',
-    databaseURL: 'https://test-environment-841c3.firebaseio.com',
-    storageBucket: 'test-environment-841c3.appspot.com',
-    measurementId: 'G-Q17FPJ4KBX',
+    apiKey: 'AIzaSyANgdhQAigR1GXmwxAWfK58lsgIZm0SWzM',
+    appId: '1:981686130457:web:0c88ed31de7d90059f9788',
+    messagingSenderId: '981686130457',
+    projectId: 'fir-sample-aae4a',
+    authDomain: 'fir-sample-aae4a.firebaseapp.com',
+    databaseURL: 'https://fir-sample-aae4a.firebaseio.com',
+    storageBucket: 'fir-sample-aae4a.appspot.com',
+    measurementId: 'G-GHYPW9MJMB',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDc1nLgJepPp9tQWAHxsBwF-LZGu9loMVU',
-    appId: '1:522544587505:android:c80990cfbe5e53a5d2bf50',
-    messagingSenderId: '522544587505',
-    projectId: 'test-environment-841c3',
-    databaseURL: 'https://test-environment-841c3.firebaseio.com',
-    storageBucket: 'test-environment-841c3.appspot.com',
+    apiKey: 'AIzaSyCBLyMKLnupvkFtOrtYT_GpVkeqZ12CBl8',
+    appId: '1:981686130457:android:51a6bf32c868d9c49f9788',
+    messagingSenderId: '981686130457',
+    projectId: 'fir-sample-aae4a',
+    databaseURL: 'https://fir-sample-aae4a.firebaseio.com',
+    storageBucket: 'fir-sample-aae4a.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAoGR8xi9uzDoOSYLEJ-kH4dSJm9bvfhEA',
-    appId: '1:522544587505:ios:648ffeb894aa0306d2bf50',
-    messagingSenderId: '522544587505',
-    projectId: 'test-environment-841c3',
-    databaseURL: 'https://test-environment-841c3.firebaseio.com',
-    storageBucket: 'test-environment-841c3.appspot.com',
+    apiKey: 'AIzaSyCz6nq1XL0rW1eBVc2eG_mxwEKup97jZPg',
+    appId: '1:981686130457:ios:d8a7e6a18b1e4adc9f9788',
+    messagingSenderId: '981686130457',
+    projectId: 'fir-sample-aae4a',
+    databaseURL: 'https://fir-sample-aae4a.firebaseio.com',
+    storageBucket: 'fir-sample-aae4a.appspot.com',
+    androidClientId: '981686130457-5bhsq1c131fvb5h31i44k7ffkrgeaubb.apps.googleusercontent.com',
+    iosClientId: '981686130457-fhiljeoof17675cjv48uih2ut4q77dco.apps.googleusercontent.com',
     iosBundleId: 'com.example.ahticketing',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAoGR8xi9uzDoOSYLEJ-kH4dSJm9bvfhEA',
-    appId: '1:522544587505:ios:648ffeb894aa0306d2bf50',
-    messagingSenderId: '522544587505',
-    projectId: 'test-environment-841c3',
-    databaseURL: 'https://test-environment-841c3.firebaseio.com',
-    storageBucket: 'test-environment-841c3.appspot.com',
+    apiKey: 'AIzaSyCz6nq1XL0rW1eBVc2eG_mxwEKup97jZPg',
+    appId: '1:981686130457:ios:d8a7e6a18b1e4adc9f9788',
+    messagingSenderId: '981686130457',
+    projectId: 'fir-sample-aae4a',
+    databaseURL: 'https://fir-sample-aae4a.firebaseio.com',
+    storageBucket: 'fir-sample-aae4a.appspot.com',
+    androidClientId: '981686130457-5bhsq1c131fvb5h31i44k7ffkrgeaubb.apps.googleusercontent.com',
+    iosClientId: '981686130457-fhiljeoof17675cjv48uih2ut4q77dco.apps.googleusercontent.com',
     iosBundleId: 'com.example.ahticketing',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDUFsrrvx7_gBubGHAjJUceUR_X4soP4XE',
-    appId: '1:522544587505:web:f36f6d250cf566f6d2bf50',
-    messagingSenderId: '522544587505',
-    projectId: 'test-environment-841c3',
-    authDomain: 'test-environment-841c3.firebaseapp.com',
-    databaseURL: 'https://test-environment-841c3.firebaseio.com',
-    storageBucket: 'test-environment-841c3.appspot.com',
-    measurementId: 'G-YVG9JCXD5Y',
+    apiKey: 'AIzaSyAyaHEX0no8l9tizUQdAG6sPbg3sPgJIA0',
+    appId: '1:981686130457:web:abd389efe9a73d3a9f9788',
+    messagingSenderId: '981686130457',
+    projectId: 'fir-sample-aae4a',
+    authDomain: 'fir-sample-aae4a.firebaseapp.com',
+    databaseURL: 'https://fir-sample-aae4a.firebaseio.com',
+    storageBucket: 'fir-sample-aae4a.appspot.com',
+    measurementId: 'G-L45LKJ3S5Z',
   );
 
 }

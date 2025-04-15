@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>981686130457-fhiljeoof17675cjv48uih2ut4q77dco.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.981686130457-fhiljeoof17675cjv48uih2ut4q77dco</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>981686130457-5bhsq1c131fvb5h31i44k7ffkrgeaubb.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCz6nq1XL0rW1eBVc2eG_mxwEKup97jZPg</string>
+	<key>GCM_SENDER_ID</key>
+	<string>981686130457</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.ahticketing</string>
+	<key>PROJECT_ID</key>
+	<string>fir-sample-aae4a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fir-sample-aae4a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:981686130457:ios:d8a7e6a18b1e4adc9f9788</string>
+	<key>DATABASE_URL</key>
+	<string>https://fir-sample-aae4a.firebaseio.com</string>
+</dict>
+</plist>

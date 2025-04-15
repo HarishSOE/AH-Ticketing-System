@@ -5,10 +5,9 @@ import 'dart:io';
 import 'package:ahticketing/AppServices/AppService.dart';
 import 'package:ahticketing/AppServices/UserData.dart';
 import 'package:ahticketing/Themes.dart';
-import 'package:ahticketing/chatQuery.dart';
 import 'package:ahticketing/firebase_options.dart';
 import 'package:ahticketing/login.dart';
-import 'package:ahticketing/watiQuery.dart';
+import 'package:ahticketing/chatsList.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'A & H Ticketing',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -82,8 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
     UserData().getUserData().then((value)async {
       userPreferences = value;
     });
-
-    Future.delayed(Duration(seconds: 1), (){
+    
+    Future.delayed(Duration(seconds: 2), (){
       if(auth.currentUser == null){
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (BuildContext context) => Login()
@@ -437,11 +437,35 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SpinKitCubeGrid(
-          color: localTheme.hexToColor("#ED048D"),
-          size: 50.0,
+        child: SingleChildScrollView(
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(
+                  width: 200,
+                  "assets/images/AH_White_Logo_Only.png",
+                ),
+                Text(
+                  "Communications",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 40),
+                SpinKitCircle(
+                  color: AppColors.purple,
+                  size: 40,
+                ),
+              ],
+            ),
+          )
         )
-      ),
+      )
     );
   }
 }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:ahticketing/AppServices/UserData.dart';
 import 'package:any_link_preview/any_link_preview.dart';
-import 'package:better_player/better_player.dart';
+// import 'package:better_player/better_player.dart';
 import 'package:ahticketing/databasehelper.dart';
 import 'package:ahticketing/AppServices/AppService.dart';
 import 'package:ahticketing/Widgets/shimmerLoading.dart';
@@ -18,6 +18,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:ahticketing/Themes.dart';
 import 'package:ahticketing/Widgets/confirmationDialog.dart';
@@ -27,7 +28,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:wakelock/wakelock.dart';
+// import 'package:wakelock/wakelock.dart';
 import 'package:sqflite/sqflite.dart';
 
 class TicketChat extends StatefulWidget {
@@ -86,7 +87,7 @@ class _TicketChat extends State<TicketChat> {
   late Database chatDB;
   late AudioPlayer _audioPlayer;
   String? currentlyPlayingUrl;
-  BetterPlayerController? betterPlayerController;
+  // BetterPlayerController? betterPlayerController;
   int totalBytes = 0;
   int downloadedBytes = 0;
   bool loading = true;
@@ -684,7 +685,7 @@ class _TicketChat extends State<TicketChat> {
             color: localTheme.barElementcolor
           ),
           title: Text("${selectedMessages.length} Message Selected",
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: localTheme.barElementcolor
             ),
           ),
@@ -749,7 +750,7 @@ class _TicketChat extends State<TicketChat> {
           },
           child: Text(
             "Support",
-            style: TextStyle(
+            style: GoogleFonts.poppins(
               color: localTheme.barElementcolor
             ),
           ),
@@ -767,9 +768,9 @@ class _TicketChat extends State<TicketChat> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SpinKitCubeGrid(
-              color: localTheme.hexToColor("#ED048D"),
-              size: 50.0,
+            SpinKitCircle(
+              color: AppColors.purple,
+              size: 40,
             ),
             SizedBox(height: 30,),
             Text("Fetching Chats...."),
@@ -821,7 +822,7 @@ class _TicketChat extends State<TicketChat> {
                           return Center(
                             child: Text(
                               "Start Your Conversation Here.....",
-                              style: TextStyle(
+                              style: GoogleFonts.poppins(
                                 color: Colors.grey,
                               )
                             ),
@@ -875,7 +876,7 @@ class _TicketChat extends State<TicketChat> {
                                         ),
                                         Text(
                                           "New messages",
-                                          style: TextStyle(
+                                          style: GoogleFonts.poppins(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold
                                           ),
@@ -1084,7 +1085,7 @@ class _TicketChat extends State<TicketChat> {
                                                                           if (currentlyPlayingUrl == file['fileurl']) 
                                                                             Text(
                                                                               '${_formatDuration(_audioPlayer.position)} ',
-                                                                              style: TextStyle(
+                                                                              style: GoogleFonts.poppins(
                                                                                 fontSize: 10,
                                                                                 color: Colors.grey,
                                                                               ),
@@ -1093,7 +1094,7 @@ class _TicketChat extends State<TicketChat> {
                                                                           if (currentlyPlayingUrl == file['fileurl'])
                                                                             Text(
                                                                               '${_formatDuration(_audioPlayer.duration ?? Duration(seconds: 0))}',
-                                                                              style: TextStyle(
+                                                                              style: GoogleFonts.poppins(
                                                                                 fontSize: 10,
                                                                                 color: Colors.black,
                                                                               ),
@@ -1135,7 +1136,7 @@ class _TicketChat extends State<TicketChat> {
                                                                   child:Text(
                                                                     "${file['filename']}",
                                                                     maxLines: 2,
-                                                                    style:TextStyle(
+                                                                    style:GoogleFonts.poppins(
                                                                       fontSize: 12,
                                                                       fontWeight: FontWeight.w500,
                                                                     ),
@@ -1169,7 +1170,7 @@ class _TicketChat extends State<TicketChat> {
                                                     dynamic progress = appService.uploadProcessing[msgdata["messageid"]]?.values.toList()[index] ?? 0;
                                                     return Text(
                                                       "Uploading 1 - ${(progress * 100).toStringAsFixed(1)}%",
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                         fontSize: 10,
                                                         color: Colors.grey
                                                       ),
@@ -1181,7 +1182,7 @@ class _TicketChat extends State<TicketChat> {
                                                     children: [
                                                       TextSpan(
                                                         text: "Ticket No : ",
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                           color: Colors.black,
                                                           fontWeight: FontWeight.bold,
                                                           letterSpacing: 0.3
@@ -1189,7 +1190,7 @@ class _TicketChat extends State<TicketChat> {
                                                       ),
                                                       TextSpan(
                                                         text:"${msgdata['issueno']}",
-                                                        style: TextStyle(
+                                                        style: GoogleFonts.poppins(
                                                           color: Colors.black,
                                                           fontWeight: FontWeight.w500
                                                         ),
@@ -1212,7 +1213,7 @@ class _TicketChat extends State<TicketChat> {
                                                   children: [
                                                     Text(
                                                       "${DateFormat("h:mm a").format(msgdata["time"].toDate())}",
-                                                      style: TextStyle(
+                                                      style: GoogleFonts.poppins(
                                                         color: Colors.grey,
                                                         fontSize:12
                                                       )
@@ -1357,7 +1358,7 @@ class _TicketChat extends State<TicketChat> {
                 child: Text(
                   "The Conversation has been closed as the Ticked is Resolved",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
                     color: Colors.pink[900]
                   ),
@@ -1393,11 +1394,11 @@ class Betterplayerscreen extends StatefulWidget {
 }
 
 class _BetterplayerscreenState extends State<Betterplayerscreen> {
-  BetterPlayerController? betterPlayerController;
+  // BetterPlayerController? betterPlayerController;
   @override
   void initState() {
     super.initState();
-    Wakelock.enable();
+    // Wakelock.enable();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -1407,37 +1408,37 @@ class _BetterplayerscreenState extends State<Betterplayerscreen> {
   @override
   void dispose(){
     super.dispose();
-    Wakelock.disable();
+    // Wakelock.disable();
   }
 
   getContent() {
-    String url =widget.fileurl;
-    print(url.contains("m3u8") ? "HLS" : url);
-    BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
-      BetterPlayerDataSourceType.network,
-      url,
-    );
-    betterPlayerController = BetterPlayerController(
-      BetterPlayerConfiguration(
-        allowedScreenSleep: false,
-        // autoPlay: true,
-        aspectRatio:widget.ratio,
-        fit: BoxFit.contain,
-        fullScreenByDefault: false,
-        controlsConfiguration: BetterPlayerControlsConfiguration(),
-        deviceOrientationsAfterFullScreen: [
-          DeviceOrientation.portraitUp,
-        ],
-        eventListener: (event) {
-          print("EVent ${event.betterPlayerEventType}");
-          if (event.betterPlayerEventType.name == "hideFullscreen" || event.betterPlayerEventType.name == "finished") {
-            Navigator.pop(context);
-          }
-          // ("Better player event ${event.betterPlayerEventType.name}");
-        },
-      ),
-      betterPlayerDataSource: betterPlayerDataSource
-    );
+    // String url =widget.fileurl;
+    // print(url.contains("m3u8") ? "HLS" : url);
+    // BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(
+    //   BetterPlayerDataSourceType.network,
+    //   url,
+    // );
+    // betterPlayerController = BetterPlayerController(
+    //   BetterPlayerConfiguration(
+    //     allowedScreenSleep: false,
+    //     // autoPlay: true,
+    //     aspectRatio:widget.ratio,
+    //     fit: BoxFit.contain,
+    //     fullScreenByDefault: false,
+    //     controlsConfiguration: BetterPlayerControlsConfiguration(),
+    //     deviceOrientationsAfterFullScreen: [
+    //       DeviceOrientation.portraitUp,
+    //     ],
+    //     eventListener: (event) {
+    //       print("EVent ${event.betterPlayerEventType}");
+    //       if (event.betterPlayerEventType.name == "hideFullscreen" || event.betterPlayerEventType.name == "finished") {
+    //         Navigator.pop(context);
+    //       }
+    //       // ("Better player event ${event.betterPlayerEventType.name}");
+    //     },
+    //   ),
+    //   betterPlayerDataSource: betterPlayerDataSource
+    // );
   }
 
   @override
@@ -1453,10 +1454,13 @@ class _BetterplayerscreenState extends State<Betterplayerscreen> {
       body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-          AspectRatio(
-            aspectRatio: widget.ratio,
-            child: betterPlayerController != null ? BetterPlayer(controller: betterPlayerController!) : CircularProgressIndicator(),
-          )
+          // AspectRatio(
+          //   aspectRatio: widget.ratio,
+          //   child: betterPlayerController != null ? BetterPlayer(controller: betterPlayerController!) : SpinKitCircle(
+          //     color: AppColors.purple,
+          //     size: 40,
+          //   ),
+          // )
         ],
       ),
     );

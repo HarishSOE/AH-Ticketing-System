@@ -1,16 +1,18 @@
 // ignore_for_file: unused_import, deprecated_member_use
 
 import 'dart:io';
+import 'package:ahticketing/AppServices/AppService.dart';
 import 'package:ahticketing/AppServices/UserData.dart';
 import 'package:ahticketing/Themes.dart';
-import 'package:ahticketing/chatQuery.dart';
+import 'package:ahticketing/customerQuery.dart';
 import 'package:ahticketing/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:ahticketing/watiQuery.dart';
+import 'package:ahticketing/chatsList.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
@@ -208,7 +210,7 @@ class _Login extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle style = TextStyle(fontFamily: 'Poppins', fontSize: 16.0,color: Colors.white70,);
+    final TextStyle style = GoogleFonts.poppins(fontSize: 16.0,color: Colors.white70,);
     return WillPopScope(
       onWillPop: () async {
         showDialog(
@@ -236,8 +238,8 @@ class _Login extends State<Login> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Color(0xFF4A0080), // Deep Purple
-                Color.fromARGB(255, 0, 0, 0), // Lighter Purple or any shade you like
+                Color.fromARGB(255, 0, 128, 43), // Deep AppColors.purple
+                Color.fromARGB(255, 0, 0, 0), // Lighter AppColors.purple or any shade you like
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -261,7 +263,7 @@ class _Login extends State<Login> {
                               children: [
                                 Text(
                                   "A&H",
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontSize: 48,
                                     fontWeight: FontWeight.bold,
@@ -271,7 +273,7 @@ class _Login extends State<Login> {
                                 SizedBox(height: 4.0),
                                 Text(
                                   "Communications",
-                                  style: TextStyle(
+                                  style: GoogleFonts.poppins(
                                     color: Colors.white70,
                                     fontSize: 14,
                                     letterSpacing: 1.2,
@@ -298,7 +300,7 @@ class _Login extends State<Login> {
                               style: style,
                               decoration: InputDecoration(
                                 hintText: "Email",
-                                hintStyle: TextStyle(color: Colors.white54),
+                                hintStyle: GoogleFonts.poppins(color: Colors.white54),
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                                 border: InputBorder.none,
                               ),
@@ -319,7 +321,7 @@ class _Login extends State<Login> {
                               style: style,
                               decoration: InputDecoration(
                                 hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.white54),
+                                hintStyle: GoogleFonts.poppins(color: Colors.white54),
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
                                 border: InputBorder.none,
                                 suffixIcon: IconButton(
@@ -348,7 +350,7 @@ class _Login extends State<Login> {
                                 login();
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF8000FF), // Bright purple
+                                backgroundColor: AppColors.purple, // Bright AppColors.purple
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12.0),
                                 ),
@@ -359,7 +361,7 @@ class _Login extends State<Login> {
                                 size: 20.0,
                               ) : Text(
                                 "Login",
-                                style: TextStyle(
+                                style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,

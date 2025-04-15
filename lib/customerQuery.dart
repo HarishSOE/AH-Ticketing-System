@@ -403,7 +403,6 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(255, 246, 84, 168),
-                          textStyle: const TextStyle(fontSize: 14),
                           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         ),
                         onPressed: () {
@@ -478,10 +477,10 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
       backgroundColor: loading ? Colors.white : localTheme.hexToColor("#ED048D"),
     ),
     body: loading ? Center(
-      child: SpinKitCubeGrid(
-        color: localTheme.hexToColor("#ED048D"),
-        size: 50.0,
-      )
+      child: SpinKitCircle(
+        color: AppColors.purple,
+        size: 40,
+      ),
     ) : Column(
       children: [
         // Gradient header
@@ -685,7 +684,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                                             SizedBox(height: 5,),
                                             Text(
                                               "${format.DateFormat("EEE MMM d, yyyy").format(issueData["reporteddate"].toDate())}",
-                                              style: TextStyle(
+                                              style: GoogleFonts.poppins(
                                                 fontSize: 12,
                                                 color: Colors.grey
                                               ),
@@ -705,7 +704,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                                               padding:EdgeInsets.all(5),
                                               child: Text(
                                                 "${snapshot.data?.docs.length}",
-                                                style: TextStyle(color:Colors.white),
+                                                style: GoogleFonts.poppins(color:Colors.white),
                                               ),
                                               decoration:BoxDecoration(color: Colors.red,shape:BoxShape.circle,),
                                             ) : SizedBox();
@@ -782,12 +781,12 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                     if (itemsToShow < filteredIssues.length)
                     TextButton(
                       onPressed: showMore,
-                      child: Text('Show More',style: TextStyle(color: Colors.grey),),
+                      child: Text('Show More',style: GoogleFonts.poppins(color: Colors.grey),),
                     ),
                     if(itemsToShow >= filteredIssues.length && itemsToShow != 3)
                     TextButton(
                       onPressed: showLess,
-                      child: Text('Show Less',style: TextStyle(color: Colors.grey),),
+                      child: Text('Show Less',style: GoogleFonts.poppins(color: Colors.grey),),
                     ),
                   ],
                 ) : SizedBox(),
@@ -806,7 +805,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
               alignment: Alignment.bottomLeft,
               child: Text(
                 "Help with Queries",
-                style: TextStyle(
+                style: GoogleFonts.poppins(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.3
@@ -833,7 +832,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
                       child : ListTile( 
                         title: Text(
                           "${category[index]['category']}",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w400
                           ),
                         ),
@@ -1031,7 +1030,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 //                                         SizedBox(height: 5,),
 //                                         Text(
 //                                           "${format.DateFormat("EEE MMM d, yyyy").format(issueData["reporteddate"].toDate())}",
-//                                           style: TextStyle(
+//                                           style: GoogleFonts.poppins(
 //                                             fontSize: 12,
 //                                             color: Colors.grey
 //                                           ),
@@ -1051,7 +1050,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 //                                           padding:EdgeInsets.all(5),
 //                                           child: Text(
 //                                             "${snapshot.data?.docs.length}",
-//                                             style: TextStyle(color:Colors.white),
+//                                             style: GoogleFonts.poppins(color:Colors.white),
 //                                           ),
 //                                           decoration:BoxDecoration(color: Colors.red,shape:BoxShape.circle,),
 //                                         ) : SizedBox();
@@ -1126,12 +1125,12 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 //                 if (itemsToShow < clientIssues.length)
 //                 TextButton(
 //                   onPressed: showMore,
-//                   child: Text('Show More',style: TextStyle(color: Colors.grey),),
+//                   child: Text('Show More',style: GoogleFonts.poppins(color: Colors.grey),),
 //                 ),
 //                 if(itemsToShow >= clientIssues.length && itemsToShow != 3)
 //                 TextButton(
 //                   onPressed: showLess,
-//                   child: Text('Show Less',style: TextStyle(color: Colors.grey),),
+//                   child: Text('Show Less',style: GoogleFonts.poppins(color: Colors.grey),),
 //                 ),
 //               ],
 //             ) : SizedBox(),
@@ -1142,7 +1141,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 //               alignment: Alignment.bottomLeft,
 //               child: Text(
 //                 "Help with Queries",
-//                 style: TextStyle(
+//                 style: GoogleFonts.poppins(
 //                   color: Colors.black,
 //                   fontWeight: FontWeight.bold,
 //                   letterSpacing: 0.3
@@ -1169,7 +1168,7 @@ class _ChatQueryAdminState extends State<ChatQueryAdmin> {
 //                       child : ListTile( 
 //                         title: Text(
 //                           "${category[index]['category']}",
-//                           style: TextStyle(
+//                           style: GoogleFonts.poppins(
 //                             fontWeight: FontWeight.w400
 //                           ),
 //                         ),
@@ -1226,7 +1225,7 @@ List<Widget> _buildItemsList(List<dynamic> items,category,context,chatConfigData
     itemList.add(
       ListTile(
         trailing: Icon(Icons.arrow_forward_ios_rounded,size: 16,),
-        title: Text(item['subcategory'],style: TextStyle(fontWeight: FontWeight.w400,fontSize: 14),),
+        title: Text(item['subcategory'],style: GoogleFonts.poppins(fontWeight: FontWeight.w400,fontSize: 14),),
         onTap: () {
           Navigator.push(context, MaterialPageRoute(
             builder: (BuildContext context) {
